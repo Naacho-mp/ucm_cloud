@@ -1,0 +1,66 @@
+name: build and push para AWS ECR - ECS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el Codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar AWS Credenciales
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION}}
+
+      - name: Login en AWS ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build y push servicio 1
+        run: |
+          docker build -t servicio1 ./semana7ucm/servicio1
+          docker tag servicio1:latest 108631844678.dkr.ecr.us-east-1.amazonaws.com/servicio1:latest
+          docker push 108631844678.dkr.ecr.us-east-1.amazonaws.com/servicio1:latest
+
+      - name: Build y push servicio 2
+        run: |
+          docker build -t servicio2 ./semana7ucm/servicio2
+          docker tag servicio2:latest 108631844678.dkr.ecr.us-east-1.amazonaws.com/servicio2:latest
+          docker push 108631844678.dkr.ecr.us-east-1.amazonaws.com/servicio2:latest
+
+      - name: Build y push servicio 3
+        run: |
+          docker build -t servicio3 ./semana7ucm/servicio3
+          docker tag servicio3:latest 108631844678.dkr.ecr.us-east-1.amazonaws.com/servicio3:latest
+          docker push 108631844678.dkr.ecr.us-east-1.amazonaws.com/servicio3:latest
+
+      # - name: Actualizar servicio1 en AWS ECS
+      #   run: |
+      #     aws ecs update-service \
+      #     --cluster cluster \
+      #     --service servicio1-task-service-uo23j4cw \
+      #     --force-new-deployment
+
+      # - name: Actualizar servicio2 en AWS ECS
+      #   run: |
+      #     aws ecs update-service \
+      #     --cluster cluster \
+      #     --service servicio2-task-service-aavd6hvb \
+      #     --force-new-deployment
+
+      # - name: Actualizar servicio3 en AWS ECS
+      #   run: |
+      #     aws ecs update-service \
+      #     --cluster cluster \
+      #     --service servicio3-task-service-8h3fo09z \
+      #     --force-new-deployment
+          
+        
+
